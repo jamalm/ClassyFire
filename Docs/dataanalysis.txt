@@ -1,0 +1,29 @@
+Indexing of features is formatted to conform to array indexing [0-n]
+f = unique values
+
+Categorical Features
+2. job (12f)
+3. marital(3f)
+4. education(4f)
+5. default(2f)
+7. housing(2f)
+8. loan(2f)
+9. contact(3f)
+11. month(12f)
+16. poutcome(4f) (p denotes previous)
+17. Output variable(2f)
+
+Continuous Features
+1. age
+6. balance (avg per annum)
+10. day (numeric value 1-31)
+12. duration (in secs) (of the call for previous attempts)
+13. campaign (number of times contacted in this campaign)
+14. pdays (number of days since last time contacted in last campaign) ( -1 denotes not previously contacted)
+15. previous (number of times contacted before this campaign)
+
+Redundant Features
+0. id (used only for numbering)
+
+additional details
+
