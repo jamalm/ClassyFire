@@ -1,0 +1,16 @@
+1. Parse training data
+    a. Split Categorical and Continuous Data
+    b. convert Categorical strings into its integer counterparts
+    c. Convert Continuous data into a normal distribution for Gaussian Naive Bayes
+2. Perform training tests
+    a. Fit the training data to the NB model
+    b. Run prediction tests on the model
+    c. need some form of confirmed accuracy
+3. Parse testing data
+    a. perform similar changes on testing data as the training data
+    b. note setup_train() currently discards the id column for the fitting to perform naturally
+     testing will need a method to keep the id's in the solution file
+    c. format the solution file to specified format
+4. Prepare solution
+    a. Write-up/report on assignment
+    b. create files for upload
