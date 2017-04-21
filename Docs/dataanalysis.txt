@@ -26,4 +26,12 @@ Redundant Features
 0. id (used only for numbering)
 
 additional details
+Categorical
+default has a 98% mode percentage and can be considered to be redundant
+loan also has high modal percentage of 83.6%
+Continuous
+balance contains a minimum value of -8019 and a max value of 81,204.
+    The standard deviation is a large number (2944.3) and the
+    3rd quartile is much lower than the max, this implies outliers are present.
+pdays contains a large majority of -1 values so this could be converted to a binary categorical feature
 
