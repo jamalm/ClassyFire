@@ -18,6 +18,8 @@ def main():
     #print train_predictor
     #print "-----------------------------------------"
     #print train_target
+
+    # model for continuous data
     gnb = GaussianNB()
     # gnb.fit(train_predictor, train_target)
 

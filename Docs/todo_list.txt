@@ -14,3 +14,8 @@
 4. Prepare solution
     a. Write-up/report on assignment
     b. create files for upload
+
+side notes
+current idea for predicting data set involves mixing the Gaussian Naive Bayes function
+and the Multinomial Naive Bayes function to get the best results,
+see http://stackoverflow.com/questions/14254203/mixing-categorial-and-continuous-data-in-naive-bayes-classifier-using-scikit-lea?rq=1
