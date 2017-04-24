@@ -11,10 +11,26 @@ def main():
     # read in training set
     traindata = pd.read_csv(train_path, header=None)
     # read in testing set
-    test = pd.read_csv(test_path, header=None)
+    # test = pd.read_csv(test_path, header=None)
 
+    # 80% for training, 20% for testing
+    data4train, data4test = traindata[:(len(traindata)-4863)], traindata[(len(traindata)-4863):]
     # first train the model and return the fitted model
-    gnb = train(traindata)
+    gnb = train(data4train)
+    (tdata, ttarget) = merge_model(setup_models(data4test))
+
+    testres = gnb.predict(tdata)
+    print data4test
+    controlresults = data4test[data4test.columns[-1]]
+    print "control results"
+    print controlresults
+    controlresults = controlresults.to_frame()
+    controlresults.columns = [0]
+    finalres = GetPercentage(testres, controlresults)
+
+
+    print "result percentage acc: "
+    print finalres
 
     # use that model to perform the prediction on the testing set of data
 
@@ -98,6 +114,8 @@ def merge_model((con_predictors, cat_predictors, targets)):
     return predictions, targets
 
 def tokenize(df):
+    print "Contents of df"
+    print df.dtypes
     """
     # see http://stackoverflow.com/questions/28016752/sklearn-trying-to-convert-string-list-to-floats
     S = set(df) # collect unique label names
@@ -113,6 +131,37 @@ def tokenize(df):
     df = df.apply(lambda x: x.cat.codes)
     # print df
     return df
+
+def GetPercentage(result, control):
+
+    suc = 0;
+    testVals = result
+    contVals = tokenize(control)
+
+    # converting the test data from a list into a dataframe
+    testVals = pd.DataFrame(testVals)
+    # resetting the index od the control
+    contVals.reset_index(inplace=True)
+    contVals.drop(contVals.columns[0], axis=1, inplace=True)
+
+    print "TEST"
+    print testVals
+
+    print "CONTROL"
+    print contVals
+
+
+    for val in range(len(testVals)):
+        cont = contVals.get_value(val, 0, takeable=True)
+        test = testVals.get_value(val, 0, takeable=True)
+        if(cont == test):
+            suc += 1
+    length = len(testVals)
+    result = float(suc) / float(length)
+    result *= 100
+    return result
+
+
 
 if __name__ == '__main__':
     main()

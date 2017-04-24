@@ -34,4 +34,4 @@ balance contains a minimum value of -8019 and a max value of 81,204.
     The standard deviation is a large number (2944.3) and the
     3rd quartile is much lower than the max, this implies outliers are present.
 pdays contains a large majority of -1 values so this could be converted to a binary categorical feature
-
+duration has cardinality of 1
