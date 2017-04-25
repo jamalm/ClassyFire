@@ -63,6 +63,7 @@ def setup_models(train, test=False):
     # get index lists for categorical and continuous data
     cat_train = train.iloc[:, list(train.select_dtypes(include=['object']).columns)]
     con_train = train.iloc[:, list(train.select_dtypes(include=['int64']).columns)]
+    con_train = ContToCat(con_train)
     cat_train[0] = cat_train.index
     # cut off id var , if test is true, save it somehow
     if(test):
@@ -165,3 +166,28 @@ def GetPercentage(result, control):
 
 if __name__ == '__main__':
     main()
+
+
+def ContToCat(cont):
+    prev = cont.columns('previous')
+    binarizer = preprocessing.Binarizer(treshold=1).fit(prev)
+    prev = binarizer
+    print "prev"
+    print prev
+
+    campain = cont.columns('campaign')
+    min_max_scalar = preprocessing.MinMaxScalar()
+    campain = min_max_scalar.fit_transform(campain)
+    print "campain"
+    print campain
+
+    cont.drop('duration', 1, inplace=true)
+    cont.drop('pdays', 1, inplace=true)
+
+    balance = cont.columns('balance')
+    balance = preprocessing.normalize(balance, norm=len(balance))
+    print "balance"
+    print balance
+
+    return  cont
+
