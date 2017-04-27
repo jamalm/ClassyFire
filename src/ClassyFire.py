@@ -1,167 +1,63 @@
 # import gaussian naive bayes model
-from sklearn.naive_bayes import GaussianNB, MultinomialNB
-import numpy as np
+from sklearn.naive_bayes import GaussianNB
+# import splitting data
+from sklearn.model_selection import train_test_split
+# for preprocessing
+from sklearn import preprocessing
+# to get accuracy for testing
+from sklearn.metrics import accuracy_score
+#for data storage
 import pandas as pd
 
-
 def main():
+    # paths to data files
     train_path = r'.\data\trainingset.txt'
     test_path = r'.\data\queries.txt'
-
-    # read in training set
+    # read in training data
     traindata = pd.read_csv(train_path, header=None)
-    # read in testing set
-    # test = pd.read_csv(test_path, header=None)
+    # drop the duration feature
+    traindata.drop(traindata.columns[12], axis=1, inplace=True)
+    # reset the index
+    traindata[0] = traindata.index
 
-    # 80% for training, 20% for testing
-    data4train, data4test = traindata[:(len(traindata)-4863)], traindata[(len(traindata)-4863):]
-    # first train the model and return the fitted model
-    gnb = train(data4train)
-    (tdata, ttarget) = merge_model(setup_models(data4test))
+    # revised trained set - encoded and scaled
+    traindata_rev = encode_data(traindata)
+    # fit model and make prediction, return model and the accuracy of it
+    accuracy, clf = predict_outcome(traindata_rev)
 
-    testres = gnb.predict(tdata)
-    print data4test
-    controlresults = data4test[data4test.columns[-1]]
-    print "control results"
-    print controlresults
-    controlresults = controlresults.to_frame()
-    controlresults.columns = [0]
-    finalres = GetPercentage(testres, controlresults)
+    print("Accuracy of Gaussian NB: {0}").format(accuracy)
 
+def encode_data(df):
+    revised = df
+    le = preprocessing.LabelEncoder()
+    revised.columns = range(17)
 
-    print "result percentage acc: "
-    print finalres
+    cat_index =[2,3,4,5,7,8,9,11,15,16]
 
-    # use that model to perform the prediction on the testing set of data
+    for i in cat_index:
+        revised[i] = le.fit_transform(df[i])
 
-"""
-    # (train_predictor, train_target) = setup_train(train)
+    scaled_features = {}
+    for each in range(17):
+        mean,std = revised[each].mean(), revised[each].std()
+        scaled_features[each] = [mean, std]
+        revised.iloc[:, each] = (revised[each] - mean)/std
+    return revised
 
-    #print train_predictor
-    #print "-----------------------------------------"
-    #print train_target
+def prepare_data(data):
+    features = data.values[:,:16]
+    target = data.values[:,16]
+    ftrain, ftest, ttrain, ttest = train_test_split(features, target, test_size=0.2, random_state= 10)
+    return (ftrain, ftest, ttrain, ttest)
 
-    # model for continuous data
-    gnb = GaussianNB()
-    # gnb.fit(train_predictor, train_target)
-"""
+def predict_outcome(data):
+    features_train, features_test, target_train, target_test = prepare_data(data)
+    clf = GaussianNB()
+    clf.fit(features_train.astype(int), target_train.astype(int))
+    target_pred = clf.predict(features_test)
 
-
-def train(df):
-    # fit independent NB models and transform them to a uniform feature set
-    # This method uses the class assignment probabilities as new features (see predict_proba function)
-    (tdata, ttarget) = merge_model(setup_models(df))
-    gnb = GaussianNB()
-    gnb.fit(tdata, ttarget)
-    test = gnb.predict_proba(tdata)
-    print "Test predictions"
-    print test
-    return gnb
-
-def setup_models(train, test=False):
-
-    # get index lists for categorical and continuous data
-    cat_train = train.iloc[:, list(train.select_dtypes(include=['object']).columns)]
-    con_train = train.iloc[:, list(train.select_dtypes(include=['int64']).columns)]
-    cat_train[0] = cat_train.index
-    # cut off id var , if test is true, save it somehow
-    if(test):
-        ids = cat_train.pop(cat_train.columns[0])
-    else:
-        cat_train.drop(cat_train.columns[0], axis=1, inplace=True)
-    # train.drop(train.columns[0], axis=1, inplace=True)
-    #
-
-    # reset data column headers
-    cat_train.columns = list(range(len(cat_train.columns)))
-    con_train.columns = list(range(len(con_train.columns)))
-
-    # separate output variable as targets by popping last indexed column
-    targets = cat_train.pop(cat_train.columns[-1])
-    # convert series to dataframe for header
-    targets = targets.to_frame()
-    # set column header to 0 for tokenise function to work
-    targets.columns = [0]
-
-    #tokenise categorical features for multinomial NB algorihm
-    targets = tokenize(targets)
-    cat_train = tokenize(cat_train)
-
-    #normalise the continuous data for the gaussian NB algorithm
-
-
-    # return the predictor set and the target set for training
-    return con_train, cat_train, targets
-
-def merge_model((con_predictors, cat_predictors, targets)):
-    targetsample = targets[0]
-    #perform gaussian on continuous data
-    gnb = GaussianNB()
-    gnb.fit(con_predictors, targetsample)
-    gauss = gnb.predict_proba(con_predictors)
-    # perform multinomial on categorical data
-    mnb = MultinomialNB()
-    mnb.fit(cat_predictors, targetsample)
-    multi = mnb.predict_proba(cat_predictors)
-    print "Gaussian predictions: "
-    print gauss
-    print "Multinomial predictions: "
-    print multi
-
-    # concatenate resulting class probabilities
-    predictions = np.hstack((multi, gauss))
-
-    return predictions, targets
-
-def tokenize(df):
-    print "Contents of df"
-    print df.dtypes
-    """
-    # see http://stackoverflow.com/questions/28016752/sklearn-trying-to-convert-string-list-to-floats
-    S = set(df) # collect unique label names
-    D = dict(zip(S, range(len(S)))) # assign each string an integer, put it in a dict
-    Y = [D[frame] for frame in df] # store class labels as ints
-    print df
-    return pd.DataFrame(Y)
-    """
-    for column in df:
-        df[column] = df[column].astype('category')
-
-    # df[] = df.columns.astype('category')
-    df = df.apply(lambda x: x.cat.codes)
-    # print df
-    return df
-
-def GetPercentage(result, control):
-
-    suc = 0;
-    testVals = result
-    contVals = tokenize(control)
-
-    # converting the test data from a list into a dataframe
-    testVals = pd.DataFrame(testVals)
-    # resetting the index od the control
-    contVals.reset_index(inplace=True)
-    contVals.drop(contVals.columns[0], axis=1, inplace=True)
-
-    print "TEST"
-    print testVals
-
-    print "CONTROL"
-    print contVals
-
-
-    for val in range(len(testVals)):
-        cont = contVals.get_value(val, 0, takeable=True)
-        test = testVals.get_value(val, 0, takeable=True)
-        if(cont == test):
-            suc += 1
-    length = len(testVals)
-    result = float(suc) / float(length)
-    result *= 100
-    return result
-
-
+    accuracy = accuracy_score(target_test.astype(int), target_pred.astype(int))
+    return accuracy, clf
 
 if __name__ == '__main__':
     main()

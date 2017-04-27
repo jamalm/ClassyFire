@@ -1,7 +1,8 @@
+----------------------------------------------------------------------------------------------------------
 Indexing of features is formatted to conform to array indexing [0-n]
 f = unique values
 
-Categorical Features
+CATEGORICAL FEATURES
 2. job (12f)
 3. marital(3f)
 4. education(4f)
@@ -13,7 +14,7 @@ Categorical Features
 16. poutcome(4f) (p denotes previous)
 17. Output variable(2f)
 
-Continuous Features
+CONTINUOUS FEATURES
 1. age
 6. balance (avg per annum)
 10. day (numeric value 1-31)
@@ -22,16 +23,17 @@ Continuous Features
 14. pdays (number of days since last time contacted in last campaign) ( -1 denotes not previously contacted)
 15. previous (number of times contacted before this campaign)
 
-Redundant Features
+REDUNDANT FEATURES
 0. id (used only for numbering)
+------------------------------------------------------------------------------------------------------------
+ADDITIONAL DETAILS
+    CATEGORICAL
+     - default has a 98% mode percentage and can be considered to be redundant
+     - loan also has high modal percentage of 83.6%
 
-additional details
-Categorical
-default has a 98% mode percentage and can be considered to be redundant
-loan also has high modal percentage of 83.6%
-Continuous
-balance contains a minimum value of -8019 and a max value of 81,204.
-    The standard deviation is a large number (2944.3) and the
-    3rd quartile is much lower than the max, this implies outliers are present.
-pdays contains a large majority of -1 values so this could be converted to a binary categorical feature
-duration has cardinality of 1
+    CONTINUOUS
+     - balance contains a minimum value of -8019 and a max value of 81,204.
+        The standard deviation is a large number (2944.3) and the
+        3rd quartile is much lower than the max, this implies outliers are present.
+     - pdays contains a large majority of -1 values so this could be converted to a binary categorical feature
+     - duration has cardinality of 1
