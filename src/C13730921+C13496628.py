@@ -15,23 +15,23 @@ def main():
     # paths to data files
     train_path = r'.\data\trainingset.txt'
     test_path = r'.\data\queries.txt'
-    # read in training data
+    # read in training data and test data
     traindata = pd.read_csv(train_path, header=None)
     testdata = pd.read_csv(test_path, header=None)
     # drop the duration feature
     traindata.drop(traindata.columns[12], axis=1, inplace=True)
     testdata.drop(testdata.columns[12], axis=1, inplace=True)
-    # reset the index
+    # reset the index after dropping features
     testlabels = testdata.loc[:, 0]
     traindata[0] = traindata.index
     testdata[0] = testdata.index
 
-    # revised trained set - encoded and scaled
+    # revised datasets - encoded and scaled
     traindata_rev = encode_data(traindata)
     testdata_rev = encode_data(testdata)
-    # fit model and make prediction, return model and the accuracy of it
+    # fit model and make prediction, return model and prediction results
     pred_results = predict_outcome(traindata_rev, testdata_rev)
-
+    # format and output the solution to a file
     output_result(testlabels, pred_results)
 
 
@@ -75,7 +75,7 @@ def predict_outcome(data, testdata):
 
 
 def output_result(testlabels, pred_res):
-    output = open('./data/C13730921+C13496628.txt', 'w')
+    output = open('./solutions/C13730921+C13496628.txt', 'w')
     for i in range(0, len(testlabels)):
         if pred_res[i] == 0:
             output.write(testlabels[i] + ',"TypeA"\n')
