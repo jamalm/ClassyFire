@@ -30,15 +30,9 @@ def main():
     traindata_rev = encode_data(traindata)
     testdata_rev = encode_data(testdata)
     # fit model and make prediction, return model and the accuracy of it
-    accuracy, clf = predict_outcome(traindata_rev, testdata_rev)
+    pred_results = predict_outcome(traindata_rev, testdata_rev)
 
-    #print("Accuracy of Gaussian NB: {0}").format(accuracy)
-    for i in range(0, len(testlabels)):
-        if clf[i] == 0:
-            print testlabels[i] + ',"TypeA"'
-        else:
-            print testlabels[i] + ',"TypeB"'
-    #print testlabels, clf
+    output_result(testlabels, pred_results)
 
 
 def encode_data(df):
@@ -77,7 +71,18 @@ def predict_outcome(data, testdata):
     #print target_pred
 
     accuracy = accuracy_score(target_test.astype(int), target_pred.astype(int))
-    return accuracy, target_pred
+    return target_pred
+
+
+def output_result(testlabels, pred_res):
+    output = open('./data/C13730921+C13496628.txt', 'w')
+    for i in range(0, len(testlabels)):
+        if pred_res[i] == 0:
+            output.write(testlabels[i] + ',"TypeA"\n')
+        else:
+            output.write(testlabels[i] + ',"TypeB"\n')
+    output.close()
+
 
 if __name__ == '__main__':
     main()
