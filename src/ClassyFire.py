@@ -77,3 +77,28 @@ def modify_data(df):
 
 if __name__ == '__main__':
     main()
+
+
+def ContToCat(cont):
+    prev = cont.columns('previous')
+    binarizer = preprocessing.Binarizer(treshold=1).fit(prev)
+    prev = binarizer
+    print "prev"
+    print prev
+
+    campain = cont.columns('campaign')
+    min_max_scalar = preprocessing.MinMaxScalar()
+    campain = min_max_scalar.fit_transform(campain)
+    print "campain"
+    print campain
+
+    cont.drop('duration', 1, inplace=true)
+    cont.drop('pdays', 1, inplace=true)
+
+    balance = cont.columns('balance')
+    balance = preprocessing.normalize(balance, norm=len(balance))
+    print "balance"
+    print balance
+
+    return  cont
+
