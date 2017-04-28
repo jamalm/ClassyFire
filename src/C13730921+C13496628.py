@@ -99,7 +99,12 @@ def modify_data(df):
         revised.drop(revised.columns[i], axis=1, inplace=True)
     #reset index
     revised[0] = revised.index
+
+    #print revised
+    simon = preprocessing.binarize(revised.loc[:, 14], 0, copy=True)
+    revised[14] = simon[0, :]
     return revised
+
 
 
 if __name__ == '__main__':
