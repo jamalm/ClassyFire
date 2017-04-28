@@ -18,13 +18,13 @@ def main():
     # read in training data and test data
     traindata = pd.read_csv(train_path, header=None)
     testdata = pd.read_csv(test_path, header=None)
-    # drop the duration feature
-    # traindata.drop(traindata.columns[12], axis=1, inplace=True)
-    # testdata.drop(testdata.columns[12], axis=1, inplace=True)
     # reset the index after dropping features
+    traindata = oversample(traindata)
+
     testlabels = testdata.loc[:, 0]
-    # traindata[0] = traindata.index
-    # testdata[0] = testdata.index
+
+    #traindata[0] = traindata.index
+    #testdata[0] = testdata.index
 
     # revised datasets - encoded and scaled
     traindata_rev = encode_data(traindata)
@@ -39,18 +39,16 @@ def encode_data(df):
     revised = df
 
     revised = modify_data(df)
-    le = preprocessing.LabelEncoder()
+    encoder = preprocessing.LabelEncoder()
     revised.columns = range(14)
 
     cat_index =[2,3,4,6,7,8,10,12,13]
 
     for i in cat_index:
-        revised[i] = le.fit_transform(df[i])
+        revised[i] = encoder.fit_transform(df[i])
 
-    scaled_features = {}
     for each in range(14):
         mean,std = revised[each].mean(), revised[each].std()
-        scaled_features[each] = [mean, std]
         revised.iloc[:, each] = (revised[each] - mean)/std
     return revised
 
@@ -60,8 +58,6 @@ def prepare_data(data, testdata):
     ttrain = data.values[:,13]
     ftest = testdata.values[:,:13]
     ttest = testdata.values[:,13]
-    #ftrain, ftest, ttrain, ttest = train_test_split(features, target, test_size=0.2, random_state= 10)
-    #ftrain, ftest = train_test_split(features, target)
     return ftrain, ftest, ttrain, ttest
 
 
@@ -74,6 +70,15 @@ def predict_outcome(data, testdata):
 
     accuracy = accuracy_score(target_test.astype(int), target_pred.astype(int))
     return target_pred
+
+
+def oversample(data):
+    typebs = data.loc[data[17] == 'TypeB'].copy()
+    result = [data, typebs, typebs, typebs]
+    data = pd.concat(result)
+
+    return data
+
 
 
 def output_result(testlabels, pred_res):

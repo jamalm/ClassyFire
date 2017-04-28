@@ -15,11 +15,13 @@ def main():
     test_path = r'.\data\queries.txt'
     # read in training data
     traindata = pd.read_csv(train_path, header=None)
+    traindata = oversample(traindata)
 
     # drop the duration feature
     # traindata.drop(traindata.columns[12], axis=1, inplace=True)
     # reset the index
     # traindata[0] = traindata.index
+    traindata = oversample(traindata)
 
     # revised trained set - encoded and scaled
     traindata_rev = encode_data(traindata)
@@ -27,6 +29,23 @@ def main():
     accuracy, clf = predict_outcome(traindata_rev)
 
     print("Accuracy of Gaussian NB: {0}").format(accuracy)
+
+
+def oversample(data):
+    typebs = data.loc[data[17] == 'TypeB'].copy()
+    result = [data, typebs, typebs, typebs]
+    data = pd.concat(result)
+
+    return data
+
+
+def oversample(data):
+    typebs = data.loc[data[17] == 'TypeB'].copy()
+    result = [data, typebs, typebs, typebs]
+    data = pd.concat(result)
+
+    return data
+
 
 def encode_data(df):
     revised = df
